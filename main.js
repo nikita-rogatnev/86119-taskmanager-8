@@ -455,6 +455,6 @@ Array.from(renderedFilters).forEach((renderedFiltersElement) => {
   renderedFiltersElement.addEventListener(`click`, function () {
     board.innerHTML = ``;
 
-    renderBoardElements(Math.floor(Math.random() * 6));
+    renderBoardElements(Math.floor(Math.random() * 7) + 1);
   });
 });

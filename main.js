@@ -454,7 +454,6 @@ const renderedFilters = document.querySelectorAll(`.filter__label`);
 Array.from(renderedFilters).forEach((renderedFiltersElement) => {
   renderedFiltersElement.addEventListener(`click`, function () {
     board.innerHTML = ``;
-
     renderBoardElements(Math.floor(Math.random() * 7) + 1);
   });
 });

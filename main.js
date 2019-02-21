@@ -451,8 +451,7 @@ const renderedFilters = document.querySelectorAll(`.filter__label`);
 // Clean Board And Render New Cards
 Array.from(renderedFilters).forEach((renderedFiltersElement) => {
   renderedFiltersElement.addEventListener(`click`, function () {
-    console.log(`click`);
     boardContainer.innerHTML = ``;
-    renderCards(Math.floor(Math.random() * 7) + 1);
+    renderCards();
   });
 });

@@ -1,148 +1,145 @@
 "use strict";
 
-// FILTER
-const filter = document.querySelector(`.main__filter`);
-// Filter Elements List
-const filterElements = [
-  {
-    caption: `All`,
-    amount: 15,
-    isChecked: true,
-  },
-  {
-    caption: `Overdue`,
-    amount: 0,
-    isDisabled: true
-  },
-  {
-    caption: `Today`,
-    amount: 0,
-    isDisabled: true
-  },
-  {
-    caption: `Favorites`,
-    amount: 7
-  },
-  {
-    caption: `Repeating`,
-    amount: 2
-  },
-  {
-    caption: `Tags`,
-    amount: 6
-  },
-  {
-    caption: `Archive`,
-    amount: 115
-  }
-];
+// Containers
+const filterContainer = document.querySelector(`.main__filter`);
+const boardContainer = document.querySelector(`.board__tasks`);
+
+// Filters And Cards
+const dataList = {
+  filters: [
+    {
+      filterName: `All`,
+      filterAmount: 15,
+      filterIsChecked: true
+    },
+    {
+      filterName: `Overdue`,
+      filterAmount: 0,
+      filterIsDisabled: true
+    },
+    {
+      filterName: `Today`,
+      filterAmount: 0,
+      filterIsDisabled: true
+    },
+    {
+      filterName: `Favorites`,
+      filterAmount: 7
+    },
+    {
+      filterName: `Repeating`,
+      filterAmount: 2
+    },
+    {
+      filterName: `Tags`,
+      filterAmount: 6
+    },
+    {
+      filterName: `Archive`,
+      filterAmount: 115
+    }
+  ],
+  cards: [
+    {
+      cardText: `It is example of repeating task. It marks by wave.`,
+      cardImage: `img/sample-img.jpg`,
+      cardDeadline: {
+        date: `23 September`,
+        time: `11:15 PM`
+      },
+      cardRepeat: `No`,
+      cardHashtag: `#repeat`,
+      cardColor: `black`
+    },
+    {
+      cardText: `It is example of repeating task. It marks by wave.`,
+      cardImage: `img/sample-img.jpg`,
+      cardDeadline: {
+        date: `23 September`,
+        time: `11:15 PM`
+      },
+      cardRepeat: `No`,
+      cardHashtag: `#repeat`,
+      cardColor: `yellow`
+    },
+    {
+      cardText: `It is example of repeating task. It marks by wave.`,
+      cardImage: `img/sample-img.jpg`,
+      cardDeadline: {
+        date: `23 September`,
+        time: `11:15 PM`
+      },
+      cardRepeat: `No`,
+      cardHashtag: `#repeat`,
+      cardColor: `blue`
+    },
+    {
+      cardText: `It is example of repeating task. It marks by wave.`,
+      cardImage: `img/sample-img.jpg`,
+      cardDeadline: {
+        date: `23 September`,
+        time: `11:15 PM`
+      },
+      cardRepeat: `No`,
+      cardHashtag: `#repeat`,
+      cardColor: `green`
+    },
+    {
+      cardText: `It is example of repeating task. It marks by wave.`,
+      cardImage: `img/sample-img.jpg`,
+      cardDeadline: {
+        date: `23 September`,
+        time: `11:15 PM`
+      },
+      cardRepeat: `No`,
+      cardHashtag: `#repeat`,
+      cardColor: `pink`
+    },
+    {
+      cardText: `It is example of repeating task. It marks by wave.`,
+      cardImage: `img/sample-img.jpg`,
+      cardDeadline: {
+        date: `23 September`,
+        time: `11:15 PM`
+      },
+      cardRepeat: `No`,
+      cardHashtag: `#repeat`,
+      cardColor: `pink`
+    },
+    {
+      cardText: `It is example of repeating task. It marks by wave.`,
+      cardImage: `img/sample-img.jpg`,
+      cardDeadline: {
+        date: `23 September`,
+        time: `11:15 PM`
+      },
+      cardRepeat: `No`,
+      cardHashtag: `#repeat`,
+      cardColor: `pink`
+    }
+  ]
+};
+
 // Filter Template
-const getFilterElement = function (caption, amount, isChecked = false, isDisabled = false) {
+const getFilterElement = dataList.filters.map((filterItem) => {
   return `
     <input
       type="radio"
-      id="filter__${caption.toLowerCase()}"
+      id="filter__${filterItem.filterName.toLowerCase()}"
       class="filter__input visually-hidden"
       name="filter"
-      ${isChecked ? `checked` : ``}
-      ${isDisabled ? `disabled` : ``}
+      ${filterItem.filterIsChecked ? `checked` : ``}
+	    ${filterItem.filterIsDisabled ? `disabled` : ``}
     />
-    <label for="filter__${caption.toLowerCase()}" class="filter__label">
-      ${caption} <span class="filter__all-count">${amount}</span>
+    <label for="filter__${filterItem.filterName.toLowerCase()}" class="filter__label">
+      ${filterItem.filterName} <span class="filter__all-count">${filterItem.filterAmount}</span>
     </label>
   `;
-};
-// Render Filter
-const renderFilterElements = function () {
-  for (let i = 0; i < filterElements.length; i++) {
-    filter.insertAdjacentHTML(`beforeend`, getFilterElement(filterElements[i].caption, filterElements[i].amount, filterElements[i].isChecked, filterElements[i].isDisabled));
-  }
-};
-renderFilterElements();
+});
+
+filterContainer.insertAdjacentHTML(`beforeend`, getFilterElement.toString());
 
 // BOARD
-const board = document.querySelector(`.board__tasks`);
-// Cards List
-const boardElements = [
-  {
-    cardText: `It is example of repeating task. It marks by wave.`,
-    cardImage: `img/sample-img.jpg`,
-    cardDeadline: {
-      date: `23 September`,
-      time: `11:15 PM`
-    },
-    cardRepeat: `No`,
-    cardHashtag: `#repeat`,
-    cardColor: `black`
-  },
-  {
-    cardText: `It is example of repeating task. It marks by wave.`,
-    cardImage: `img/sample-img.jpg`,
-    cardDeadline: {
-      date: `23 September`,
-      time: `11:15 PM`
-    },
-    cardRepeat: `No`,
-    cardHashtag: `#repeat`,
-    cardColor: `yellow`
-  },
-  {
-    cardText: `It is example of repeating task. It marks by wave.`,
-    cardImage: `img/sample-img.jpg`,
-    cardDeadline: {
-      date: `23 September`,
-      time: `11:15 PM`
-    },
-    cardRepeat: `No`,
-    cardHashtag: `#repeat`,
-    cardColor: `blue`
-  },
-  {
-    cardText: `It is example of repeating task. It marks by wave.`,
-    cardImage: `img/sample-img.jpg`,
-    cardDeadline: {
-      date: `23 September`,
-      time: `11:15 PM`
-    },
-    cardRepeat: `No`,
-    cardHashtag: `#repeat`,
-    cardColor: `green`
-  },
-  {
-    cardText: `It is example of repeating task. It marks by wave.`,
-    cardImage: `img/sample-img.jpg`,
-    cardDeadline: {
-      date: `23 September`,
-      time: `11:15 PM`
-    },
-    cardRepeat: `No`,
-    cardHashtag: `#repeat`,
-    cardColor: `pink`
-  },
-  {
-    cardText: `It is example of repeating task. It marks by wave.`,
-    cardImage: `img/sample-img.jpg`,
-    cardDeadline: {
-      date: `23 September`,
-      time: `11:15 PM`
-    },
-    cardRepeat: `No`,
-    cardHashtag: `#repeat`,
-    cardColor: `pink`
-  },
-  {
-    cardText: `It is example of repeating task. It marks by wave. `,
-    cardImage: `img/sample-img.jpg`,
-    cardDeadline: {
-      date: `23 September`,
-      time: `11:15 PM`
-    },
-    cardRepeat: `No`,
-    cardHashtag: `#repeat`,
-    cardColor: `pink`
-  }
-];
-// Card Template
 const getBoardElement = function (text = `black`, image, date, time, repeat, color) {
   return `
       <article class="card card--${color} card--repeat">
@@ -442,10 +439,11 @@ const getBoardElement = function (text = `black`, image, date, time, repeat, col
 // Render Board
 const renderBoardElements = function (count) {
   for (let i = 0; i < count; i++) {
-    board.insertAdjacentHTML(`beforeend`, getBoardElement(boardElements[i].cardText, boardElements[i].cardImage, boardElements[i].cardDeadline.date, boardElements[i].cardDeadline.time, boardElements[i].cardRepeat, boardElements[i].cardColor));
+    boardContainer.insertAdjacentHTML(`beforeend`, getBoardElement(dataList.cards[i].cardText, dataList.cards[i].cardImage, dataList.cards[i].cardDeadline.date, dataList.cards[i].cardDeadline.time, dataList.cards[i].cardRepeat, dataList.cards[i].cardColor));
   }
 };
-renderBoardElements(boardElements.length);
+renderBoardElements(dataList.cards.length);
+
 
 // SORT BOARD WITHIN FILTER
 // Filter Elements
@@ -453,7 +451,7 @@ const renderedFilters = document.querySelectorAll(`.filter__label`);
 // Removing Cards And Rendering New
 Array.from(renderedFilters).forEach((renderedFiltersElement) => {
   renderedFiltersElement.addEventListener(`click`, function () {
-    board.innerHTML = ``;
+    boardContainer.innerHTML = ``;
     renderBoardElements(Math.floor(Math.random() * 7) + 1);
   });
 });

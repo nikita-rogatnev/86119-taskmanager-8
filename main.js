@@ -1,10 +1,6 @@
 "use strict";
 
-// Containers
-const filterContainer = document.querySelector(`.main__filter`);
-const boardContainer = document.querySelector(`.board__tasks`);
-
-// Filters And Cards
+// DATA
 const dataList = {
   filters: [
     {
@@ -120,29 +116,36 @@ const dataList = {
   ]
 };
 
+// FILTER
+const filterContainer = document.querySelector(`.main__filter`);
 // Filter Template
-const getFilterElement = dataList.filters.map((filterItem) => {
+const getFilterElement = dataList.filters.map((filterElement) => {
   return `
     <input
       type="radio"
-      id="filter__${filterItem.filterName.toLowerCase()}"
+      id="filter__${filterElement.filterName.toLowerCase()}"
       class="filter__input visually-hidden"
       name="filter"
-      ${filterItem.filterIsChecked ? `checked` : ``}
-	    ${filterItem.filterIsDisabled ? `disabled` : ``}
+      ${filterElement.filterIsChecked ? `checked` : ``}
+	    ${filterElement.filterIsDisabled ? `disabled` : ``}
     />
-    <label for="filter__${filterItem.filterName.toLowerCase()}" class="filter__label">
-      ${filterItem.filterName} <span class="filter__all-count">${filterItem.filterAmount}</span>
+    <label for="filter__${filterElement.filterName.toLowerCase()}" class="filter__label">
+      ${filterElement.filterName} <span class="filter__all-count">${filterElement.filterAmount}</span>
     </label>
   `;
 });
+// Render Filters
+const renderFilter = () => {
+  return filterContainer.insertAdjacentHTML(`beforeend`, getFilterElement.join(``));
+};
+renderFilter();
 
-filterContainer.insertAdjacentHTML(`beforeend`, getFilterElement.toString());
-
-// BOARD
-const getBoardElement = function (text = `black`, image, date, time, repeat, color) {
+// BOARD WITH CARDS
+const boardContainer = document.querySelector(`.board__tasks`);
+// Card Template
+const getCardElement = dataList.cards.map((cardElement) => {
   return `
-      <article class="card card--${color} card--repeat">
+    <article class="card card--${cardElement.cardColor} card--repeat">
         <form class="card__form" method="get">
           <div class="card__inner">
             <div class="card__control">
@@ -172,7 +175,7 @@ const getBoardElement = function (text = `black`, image, date, time, repeat, col
                       class="card__text"
                       placeholder="Start typing your text here..."
                       name="text"
-                    >${text}</textarea>
+                    >${cardElement.cardText}</textarea>
               </label>
             </div>
 
@@ -190,7 +193,7 @@ const getBoardElement = function (text = `black`, image, date, time, repeat, col
                         type="text"
                         placeholder="23 September"
                         name="date"
-                        value="${date}"
+                        value="${cardElement.cardDeadline.date}"
                       />
                     </label>
                     <label class="card__input-deadline-wrap">
@@ -199,13 +202,13 @@ const getBoardElement = function (text = `black`, image, date, time, repeat, col
                         type="text"
                         placeholder="11:15 PM"
                         name="time"
-                        value="${time}"
+                        value="${cardElement.cardDeadline.time}"
                       />
                     </label>
                   </fieldset>
 
                   <button class="card__repeat-toggle" type="button">
-                    repeat:<span class="card__repeat-status">${repeat}</span>
+                    repeat:<span class="card__repeat-status">${cardElement.cardRepeat}</span>
                   </button>
 
                   <fieldset class="card__repeat-days">
@@ -353,7 +356,7 @@ const getBoardElement = function (text = `black`, image, date, time, repeat, col
                   name="img"
                 />
                 <img
-                  src="${image}"
+                  src="${cardElement.cardImage}"
                   alt="task picture"
                   class="card__img"
                 />
@@ -435,23 +438,21 @@ const getBoardElement = function (text = `black`, image, date, time, repeat, col
         </form>
       </article>
   `;
+});
+// Render Cards
+const renderCards = () => {
+  return boardContainer.insertAdjacentHTML(`beforeend`, getCardElement.join(``));
 };
-// Render Board
-const renderBoardElements = function (count) {
-  for (let i = 0; i < count; i++) {
-    boardContainer.insertAdjacentHTML(`beforeend`, getBoardElement(dataList.cards[i].cardText, dataList.cards[i].cardImage, dataList.cards[i].cardDeadline.date, dataList.cards[i].cardDeadline.time, dataList.cards[i].cardRepeat, dataList.cards[i].cardColor));
-  }
-};
-renderBoardElements(dataList.cards.length);
-
+renderCards();
 
 // SORT BOARD WITHIN FILTER
 // Filter Elements
 const renderedFilters = document.querySelectorAll(`.filter__label`);
-// Removing Cards And Rendering New
+// Clean Board And Render New Cards
 Array.from(renderedFilters).forEach((renderedFiltersElement) => {
   renderedFiltersElement.addEventListener(`click`, function () {
+    console.log(`click`);
     boardContainer.innerHTML = ``;
-    renderBoardElements(Math.floor(Math.random() * 7) + 1);
+    renderCards(Math.floor(Math.random() * 7) + 1);
   });
 });

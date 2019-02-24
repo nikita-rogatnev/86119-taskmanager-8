@@ -1,5 +1,3 @@
-"use strict";
-
 // DATA
 const dataList = {
   filters: [

@@ -1,0 +1,35 @@
+{
+  "filters": [
+    {
+      "filterName": "All",
+      "filterAmount": 15,
+      "filterIsChecked": true
+    },
+    {
+      "filterName": "Overdue",
+      "filterAmount": 0,
+      "filterIsDisabled": true
+    },
+    {
+      "filterName": "Today",
+      "filterAmount": 0,
+      "filterIsDisabled": true
+    },
+    {
+      "filterName": "Favorites",
+      "filterAmount": 7
+    },
+    {
+      "filterName": "Repeating",
+      "filterAmount": 2
+    },
+    {
+      "filterName": "Tags",
+      "filterAmount": 6
+    },
+    {
+      "filterName": "Archive",
+      "filterAmount": 115
+    }
+  ]
+}

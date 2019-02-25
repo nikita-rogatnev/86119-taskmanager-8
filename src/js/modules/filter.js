@@ -1,7 +1,5 @@
 import * as dataFilters from '../data/filters.json';
 
-// FILTER
-const filterContainer = document.querySelector(`.main__filter`);
 // Filter Template
 const getFilterElement = dataFilters.filters.map((filterElement) => {
   return `
@@ -18,9 +16,8 @@ const getFilterElement = dataFilters.filters.map((filterElement) => {
     </label>
   `;
 });
-// Render Filters
-const renderFilter = () => {
-  return filterContainer.insertAdjacentHTML(`beforeend`, getFilterElement.join(``));
-};
 
-export default renderFilter;
+// Render Filters
+export const renderFilter = () => {
+  return document.querySelector(`.main__filter`).insertAdjacentHTML(`beforeend`, getFilterElement.join(``));
+};

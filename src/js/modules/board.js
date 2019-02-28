@@ -1,9 +1,41 @@
-import * as dataCards from '../data/cards.json';
+const dataCards = {
+  title: [
+    `Изучить теорию`,
+    `Сделать домашку`,
+    `Пройти интенсив на соточку`,
+  ][Math.floor(Math.random() * 3)],
+  dueDate: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
+  tags: new Set([
+    `homework`,
+    `theory`,
+    `practice`,
+    `intensive`,
+    `keks`,
+  ]),
+  picture: `//picsum.photos/100/100?r=${Math.random()}`,
+  color: [
+    `black`,
+    `yellow`,
+    `blue`,
+    `green`,
+    `pink`,
+  ],
+  repeatingDays: {
+    'mo': true,
+    'tu': false,
+    'we': true,
+    'th': false,
+    'fr': false,
+    'sa': true,
+    'su': false,
+  },
+  isFavorite: true,
+  isDone: false
+};
 
 // Card Template
-const getCardElement = dataCards.cards.map((cardElement) => {
-  return `
-    <article class="card card--${cardElement.cardColor} card--repeat">
+const getCardElement = (cardElement) => `
+    <article class="card card--${cardElement.color} card--repeat">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -22,7 +54,7 @@ const getCardElement = dataCards.cards.map((cardElement) => {
                 class="card__text"
                  placeholder="Start typing your text here..."
                  name="text"
-              >${cardElement.cardText}</textarea>
+              >${cardElement.title}</textarea>
             </label>
           </div>
           <div class="card__settings">
@@ -38,7 +70,7 @@ const getCardElement = dataCards.cards.map((cardElement) => {
                       type="text"
                       placeholder="23 September"
                       name="date"
-                      value="${cardElement.cardDeadline.date}"
+                      value="${cardElement.dueDate}"
                     />
                   </label>
                   <label class="card__input-deadline-wrap">
@@ -47,7 +79,7 @@ const getCardElement = dataCards.cards.map((cardElement) => {
                       type="text"
                       placeholder="11:15 PM"
                       name="time"
-                      value="${cardElement.cardDeadline.time}"
+                      value="${cardElement.dueDate}"
                     />
                   </label>
                 </fieldset>
@@ -181,7 +213,7 @@ const getCardElement = dataCards.cards.map((cardElement) => {
                 name="img"
               />
               <img
-                src="${cardElement.cardImage}"
+                src="${cardElement.picture}"
                 alt="task picture"
                 class="card__img"
               />
@@ -256,9 +288,10 @@ const getCardElement = dataCards.cards.map((cardElement) => {
       </form>
     </article>
   `;
-});
 
 // Render Cards
-export const renderCards = () => {
-  return document.querySelector(`.board__tasks`).insertAdjacentHTML(`beforeend`, getCardElement.join(``));
+export const renderCards = (dist, amount) => {
+  dist.insertAdjacentHTML(`beforeend`, new Array(amount)
+    .fill(getCardElement(dataCards))
+    .join(``));
 };

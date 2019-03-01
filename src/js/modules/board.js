@@ -7,11 +7,13 @@ const dataCards = {
     `Пройти интенсив на соточку`,
   ][Math.floor(Math.random() * 3)],
   get dueDate() {
-    const dueDate = new Date().toLocaleDateString(`en-GB`, {
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + getRandomNumber(-7, 7));
+
+    return dueDate.toLocaleDateString(`en-GB`, {
       day: `numeric`,
       month: `long`
     });
-    return dueDate.split(` `).join(` `);
   },
   tags: new Set([
     `homework`,

@@ -1,7 +1,5 @@
 import * as dataFilters from '../data/filters.json';
 
-export const getRandomNumber = (min, max) => Math.floor(Math.random() * (max + 1 - min) + min);
-
 // Filter Template
 const getFilterElement = dataFilters.filters.map((filterElement) => {
   return `

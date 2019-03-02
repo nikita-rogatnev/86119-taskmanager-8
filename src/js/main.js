@@ -1,7 +1,11 @@
 import {renderCards} from './modules/board';
 import {renderFilter} from './modules/filter';
 
-renderCards();
+// Render Cards
+const tasksContainer = document.querySelector(`.board__tasks`);
+renderCards(tasksContainer, 7);
+
+// Render Filter
 renderFilter();
 
 // SORT BOARD WITHIN FILTER

@@ -10,8 +10,6 @@ export class TaskEdit {
 
     this._element = null;
     this._onSubmit = null;
-
-    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
   }
 
   _onSubmitButtonClick(evt) {
@@ -164,7 +162,7 @@ export class TaskEdit {
 
   bind() {
     this._element.querySelector(`.card__form`)
-      .addEventListener(`submit`, this._onSubmitButtonClick);
+      .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
   }
 
   unbind() {

@@ -14,8 +14,6 @@ export class Task {
       // Component State
     };
 
-    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this)
-
     this._onEdit = null;
   }
 
@@ -80,7 +78,7 @@ export class Task {
   bind() {
     this._element
       .querySelector(`.card__btn--edit`)
-      .addEventListener(`click`, this._onSubmitButtonClick);
+      .addEventListener(`click`, this._onEditButtonClick.bind(this));
   }
 
   render() {

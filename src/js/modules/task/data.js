@@ -22,7 +22,9 @@ export const taskList = {
     `intensive`,
     `keks`,
   ]),
-  picture: `//picsum.photos/100/100?r=${Math.random()}`,
+  get picture() {
+    return `//picsum.photos/100/100?r=${Math.random()}`;
+  },
   color: [
     `black`,
     `yellow`,

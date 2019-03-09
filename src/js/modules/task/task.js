@@ -10,11 +10,12 @@ export class Task {
     this._repeatingDays = data.repeatingDays;
 
     this._element = null;
+    this._onEdit = null;
+    this._onEditButtonClick = this._onEditButtonClick.bind(this);
+
     this._state = {
       // Component State
     };
-
-    this._onEdit = null;
   }
 
   _isRepeated() {
@@ -76,9 +77,7 @@ export class Task {
   }
 
   bind() {
-    this._element
-      .querySelector(`.card__btn--edit`)
-      .addEventListener(`click`, this._onEditButtonClick.bind(this));
+    this._element.querySelector(`.card__btn--edit`).addEventListener(`click`, this._onEditButtonClick);
   }
 
   render() {

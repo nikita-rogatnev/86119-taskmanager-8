@@ -1,4 +1,4 @@
-import * as dataFilters from '../data/filters.json';
+import * as dataFilters from './filters.json';
 
 // Filter Template
 const getFilterElement = dataFilters.filters.map((filterElement) => {

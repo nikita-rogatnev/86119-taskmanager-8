@@ -1,8 +1,8 @@
-import {taskList} from './modules/task/data';
-import {Task} from './modules/task/task';
-import {TaskEdit} from './modules/task/task-edit';
+import {taskList} from './task/data';
+import {Task} from './task/task';
+import {TaskEdit} from './task/task-edit';
 
-import {renderFilter} from './modules/filter/filter';
+import {renderFilter} from './filter/filter';
 
 // Render Filter
 renderFilter();

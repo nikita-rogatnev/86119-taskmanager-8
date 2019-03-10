@@ -1,7 +1,8 @@
-import {createElement} from '../create-element';
+import {Component} from '../component';
 
-export class Task {
+export class Task extends Component {
   constructor(data) {
+    super();
     this._color = data.color;
     this._title = data.title;
     this._dueDate = data.dueDate;
@@ -9,24 +10,13 @@ export class Task {
     this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
 
-    this._element = null;
-    this._state = {
-      // Component State
-    };
+    this._onEditButtonClick = this._onEditButtonClick.bind(this);
 
     this._onEdit = null;
   }
 
-  _isRepeated() {
-    return Object.values(this._repeatingDays).some((it) => it === true);
-  }
-
   _onEditButtonClick() {
     typeof this._onEdit === `function` && this._onEdit();
-  }
-
-  get element() {
-    return this._element;
   }
 
   set onEdit(fn) {
@@ -76,23 +66,12 @@ export class Task {
   }
 
   bind() {
-    this._element
-      .querySelector(`.card__btn--edit`)
-      .addEventListener(`click`, this._onEditButtonClick.bind(this));
-  }
-
-  render() {
-    this._element = createElement(this.template);
-    this.bind();
-    return this._element;
+    this._element.querySelector(`.card__btn--edit`)
+      .addEventListener(`click`, this._onEditButtonClick);
   }
 
   unbind() {
-    // Remove Handlers
-  }
-
-  unrender() {
-    this.unbind();
-    this._element = null;
+    this._element.querySelector(`.card__btn--edit`)
+      .removeEventListener(`click`, this._onEditButtonClick);
   }
 }

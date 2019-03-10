@@ -24,4 +24,4 @@ editTaskComponent.onSubmit = () => {
   taskComponent.render();
   tasksContainer.replaceChild(taskComponent.element, editTaskComponent.element);
   editTaskComponent.unrender();
-}
+};

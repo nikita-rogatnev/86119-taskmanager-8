@@ -145,7 +145,7 @@ export class TaskEdit extends Component {
 
   bind() {
     this._element.querySelector(`.card__form`)
-      .addEventListener(`submit`, this._onSubmitButtonClick.bind(this));
+      .addEventListener(`submit`, this._onSubmitButtonClick);
   }
 
   unbind() {

@@ -2,6 +2,8 @@ import {Component} from '../../component';
 import {Color} from './color';
 import moment from 'moment';
 import flatpickr from 'flatpickr';
+import "../../../node_modules/flatpickr/dist/flatpickr.css";
+import "../../../node_modules/flatpickr/dist/themes/dark.css";
 
 export class TaskEdit extends Component {
   constructor(data) {
@@ -46,6 +48,8 @@ export class TaskEdit extends Component {
 
       taskEditMapper[property] && taskEditMapper[property](value);
     }
+
+    console.log(entry);
 
     return entry;
   }
@@ -243,29 +247,14 @@ export class TaskEdit extends Component {
   }
 
   static createMapper(target) {
+    console.log(target);
+
     return {
-      dueDate: (value) => {
-        target.dueDate = value;
-        return target.dueDate;
-      },
-      hashtag: (value) => {
-        return target.tags.add(value);
-      },
-      text: (value) => {
-        target.title = value;
-        return target.title;
-      },
-      color: (value) => {
-        target.color = value;
-        return target.color;
-      },
-      repeat: (value) => {
-        target.repeatingDays[value] = true;
-        return target.repeatingDays[value];
-      },
-      date: (value) => {
-        return target.dueDate[value];
-      },
+      text: (value) => target.title = value,
+      hashtag: (value) => target.tags.add(value),
+      color: (value) => target.color = value,
+      repeat: (value) => target.repeatingDays[value] = true,
+      date: (value) => target.dueDate[value],
     };
   }
 }

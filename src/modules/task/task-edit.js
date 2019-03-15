@@ -1,7 +1,7 @@
 import {Component} from '../../component';
 import {Color} from './color';
-import flatpickr from 'flatpickr';
 import moment from 'moment';
+import flatpickr from 'flatpickr';
 
 export class TaskEdit extends Component {
   constructor(data) {
@@ -44,7 +44,6 @@ export class TaskEdit extends Component {
     for (const pair of formData.entries()) {
       const [property, value] = pair;
 
-      // TODO: ESLint: Expected an assignment or function call and instead saw an expression. (no-unused-expressions)
       taskEditMapper[property] && taskEditMapper[property](value);
     }
 
@@ -207,14 +206,16 @@ export class TaskEdit extends Component {
     this._element.querySelector(`.card__repeat-toggle`)
       .addEventListener(`click`, this._onChangeRepeated);
 
-    // TODO: Что то тут упускаю
     if (this._state.isDate) {
-      flatpickr(`.card__date`, {
+      const cardDate = this._element.querySelector(`.card__date`);
+      const cardTime = this._element.querySelector(`.card__time`);
+
+      flatpickr(cardDate, {
         altInput: true,
         altFormat: `j F`,
         dateFormat: `j F`
       });
-      flatpickr(`.card__time`, {
+      flatpickr(cardTime, {
         enableTime: true,
         noCalendar: true,
         altInput: true,
@@ -243,13 +244,28 @@ export class TaskEdit extends Component {
 
   static createMapper(target) {
     return {
-      // TODO: ESLint: Arrow function should not return assignment. (no-return-assign)
-      dueDate: (value) => target.dueDate = value,
-      hashtag: (value) => target.tags.add(value),
-      text: (value) => target.title = value,
-      color: (value) => target.color = value,
-      repeat: (value) => target.repeatingDays[value] = true,
-      date: (value) => target.dueDate[value],
+      dueDate: (value) => {
+        target.dueDate = value;
+        return target.dueDate;
+      },
+      hashtag: (value) => {
+        return target.tags.add(value);
+      },
+      text: (value) => {
+        target.title = value;
+        return target.title;
+      },
+      color: (value) => {
+        target.color = value;
+        return target.color;
+      },
+      repeat: (value) => {
+        target.repeatingDays[value] = true;
+        return target.repeatingDays[value];
+      },
+      date: (value) => {
+        return target.dueDate[value];
+      },
     };
   }
 }

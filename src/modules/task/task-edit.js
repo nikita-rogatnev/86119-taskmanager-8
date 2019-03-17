@@ -49,8 +49,6 @@ export class TaskEdit extends Component {
       taskEditMapper[property] && taskEditMapper[property](value);
     }
 
-    console.log(entry);
-
     return entry;
   }
 
@@ -118,10 +116,10 @@ export class TaskEdit extends Component {
                 </button>
                 <fieldset class="card__date-deadline" ${!this._state.isDate && `disabled`}>
                   <label class="card__input-deadline-wrap">
-                    <input class="card__date" type="text" placeholder="23 September" name="date" value="${moment(this._dueDate).format(`DD MMMM HH:MM`)}" />
+                    <input class="card__date" type="text" placeholder="23 September" name="date" value="${moment(this._dueDate).format(`D MMMM`)}" />
                   </label>
                   <label class="card__input-deadline-wrap">
-                    <input class="card__time" type="text" placeholder="11:15 PM" name="time" value="${moment(this._dueDate).format(`HH:MM`)}" />
+                    <input class="card__time" type="text" placeholder="11:15 PM" name="time" value="${moment(this._dueDate).format(`HH:mm`)}" />
                     </label>
                   </fieldset>
                   <button class="card__repeat-toggle" type="button">
@@ -244,17 +242,44 @@ export class TaskEdit extends Component {
     this._color = data.color;
     this._repeatingDays = data.repeatingDays;
     this._dueDate = data.dueDate;
+
+    console.log(data);
   }
 
   static createMapper(target) {
-    console.log(target);
-
     return {
-      text: (value) => target.title = value,
-      hashtag: (value) => target.tags.add(value),
-      color: (value) => target.color = value,
-      repeat: (value) => target.repeatingDays[value] = true,
-      date: (value) => target.dueDate[value],
+      text: (value) => {
+        target.title = value;
+      },
+      hashtag: (value) => {
+        target.tags.add(value);
+      },
+      color: (value) => {
+        target.color = value;
+      },
+      repeat: (value) => {
+        target.repeatingDays[value] = true;
+      },
+      date(value) {
+        const inputDate = moment(value, `D MMMM`);
+        const newDate = moment(target.dueDate);
+
+        newDate.month(inputDate.month());
+        newDate.date(inputDate.date());
+
+        target.dueDate = newDate.toDate();
+      },
+
+      time(value) {
+        const inputTime = moment(value, `HH:mm A`);
+        const newDate = moment(target.dueDate);
+
+        newDate.hour(inputTime.hour());
+        newDate.minute(inputTime.minute());
+        newDate.second(0);
+
+        target.dueDate = newDate.toDate();
+      }
     };
   }
 }

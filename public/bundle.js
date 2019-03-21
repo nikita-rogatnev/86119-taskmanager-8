@@ -20921,7 +20921,7 @@ class Component {
   }
 
   render() {
-    this._element = Object(_helpers_create_element__WEBPACK_IMPORTED_MODULE_0__["createElement"])(this.template);
+    this._element = Object(_helpers_create_element__WEBPACK_IMPORTED_MODULE_0__["default"])(this.template);
     this.bind();
     return this._element;
   }
@@ -20946,17 +20946,31 @@ class Component {
 /*!***************************************!*\
   !*** ./src/helpers/create-element.js ***!
   \***************************************/
-/*! exports provided: createElement */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "createElement", function() { return createElement; });
-const createElement = template => {
+/* harmony default export */ __webpack_exports__["default"] = (template => {
   const newElement = document.createElement(`div`);
   newElement.innerHTML = template;
   return newElement.firstChild;
-};
+});
+
+/***/ }),
+
+/***/ "./src/helpers/get-random-number.js":
+/*!******************************************!*\
+  !*** ./src/helpers/get-random-number.js ***!
+  \******************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony default export */ __webpack_exports__["default"] = ((min, max) => {
+  return Math.floor(Math.random() * (max + 1 - min) + min);
+});
 
 /***/ }),
 
@@ -20969,39 +20983,82 @@ const createElement = template => {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var _modules_task_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/task/data */ "./src/modules/task/data.js");
-/* harmony import */ var _modules_task_task__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/task/task */ "./src/modules/task/task.js");
-/* harmony import */ var _modules_task_task_edit__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/task/task-edit */ "./src/modules/task/task-edit.js");
-/* harmony import */ var _modules_filter_filter__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/filter/filter */ "./src/modules/filter/filter.js");
+/* harmony import */ var _helpers_get_random_number__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./helpers/get-random-number */ "./src/helpers/get-random-number.js");
+/* harmony import */ var _modules_filter_filter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/filter/filter */ "./src/modules/filter/filter.js");
+/* harmony import */ var _modules_task_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/task/data */ "./src/modules/task/data.js");
+/* harmony import */ var _modules_task_task__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/task/task */ "./src/modules/task/task.js");
+/* harmony import */ var _modules_task_task_edit__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/task/task-edit */ "./src/modules/task/task-edit.js");
 
 
 
- // Render Filter
 
-Object(_modules_filter_filter__WEBPACK_IMPORTED_MODULE_3__["renderFilter"])(); // Render Tasks
+ // Variables
 
+const filtersContainer = document.querySelector(`.main__filter`);
+const filterItems = [`all`, `overdue`, `today`, `favorites`, `repeating`, `tags`, `archive`];
+const TASKS_COUNT = 12;
 const tasksContainer = document.querySelector(`.board__tasks`);
-const taskComponent = new _modules_task_task__WEBPACK_IMPORTED_MODULE_1__["Task"](_modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"]);
-const editTaskComponent = new _modules_task_task_edit__WEBPACK_IMPORTED_MODULE_2__["TaskEdit"](_modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"]);
-tasksContainer.appendChild(taskComponent.render());
+const taskItems = new Array(TASKS_COUNT).fill(``).map(() => Object(_modules_task_data__WEBPACK_IMPORTED_MODULE_2__["default"])()); // Application
 
-taskComponent.onEdit = () => {
-  editTaskComponent.render();
-  tasksContainer.replaceChild(editTaskComponent.element, taskComponent.element);
-  taskComponent.unrender();
-};
+const app = {
+  _updateTask(tasks, i, data) {
+    tasks[i] = Object.assign({}, tasks[i], data);
+    return tasks[i];
+  },
 
-editTaskComponent.onSubmit = newObject => {
-  _modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"].title = newObject.title;
-  _modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"].tags = newObject.tags;
-  _modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"].color = newObject.color;
-  _modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"].repeatingDays = newObject.repeatingDays;
-  _modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"].dueDate = newObject.dueDate;
-  taskComponent.update(_modules_task_data__WEBPACK_IMPORTED_MODULE_0__["taskList"]);
-  taskComponent.render();
-  tasksContainer.replaceChild(taskComponent.element, editTaskComponent.element);
-  editTaskComponent.unrender();
+  _deleteTask(tasks, i) {
+    tasks.splice(i, 1);
+    return tasks;
+  },
+
+  // Render Filters
+  renderFilters(labels) {
+    const filters = labels.map(label => Object(_modules_filter_filter__WEBPACK_IMPORTED_MODULE_1__["filter"])(label, Object(_helpers_get_random_number__WEBPACK_IMPORTED_MODULE_0__["default"])(0, 12)));
+
+    if (filters && filters.length) {
+      filtersContainer.insertAdjacentHTML(`beforeend`, labels.map(label => Object(_modules_filter_filter__WEBPACK_IMPORTED_MODULE_1__["filter"])(label, Object(_helpers_get_random_number__WEBPACK_IMPORTED_MODULE_0__["default"])(0, 12))).join(``));
+    }
+  },
+
+  // Render Tasks
+  renderTasks(tasks, container) {
+    container.textContent = ``;
+    tasks.forEach((task, i) => {
+      const taskComponent = new _modules_task_task__WEBPACK_IMPORTED_MODULE_3__["Task"](task);
+      const taskEditComponent = new _modules_task_task_edit__WEBPACK_IMPORTED_MODULE_4__["TaskEdit"](task);
+
+      taskComponent.onEdit = () => {
+        taskEditComponent.render();
+        tasksContainer.replaceChild(taskEditComponent.element, taskComponent.element);
+        taskComponent.unrender();
+      };
+
+      taskEditComponent.onSubmit = data => {
+        const taskData = this._updateTask(tasks, i, data);
+
+        taskComponent.update(taskData);
+        taskComponent.render();
+        tasksContainer.replaceChild(taskComponent.element, taskEditComponent.element);
+        taskEditComponent.unrender();
+      };
+
+      taskEditComponent.onDelete = () => {
+        this._deleteTask(tasks, i);
+
+        taskEditComponent.unrender();
+      };
+
+      container.appendChild(taskComponent.render());
+    });
+  },
+
+  render() {
+    this.renderFilters(filterItems);
+    this.renderTasks(taskItems, tasksContainer);
+  }
+
 };
+app.render();
 
 /***/ }),
 
@@ -21009,46 +21066,15 @@ editTaskComponent.onSubmit = newObject => {
 /*!**************************************!*\
   !*** ./src/modules/filter/filter.js ***!
   \**************************************/
-/*! exports provided: renderFilter */
+/*! exports provided: filter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "renderFilter", function() { return renderFilter; });
-/* harmony import */ var _filters_json__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./filters.json */ "./src/modules/filter/filters.json");
-var _filters_json__WEBPACK_IMPORTED_MODULE_0___namespace = /*#__PURE__*/__webpack_require__.t(/*! ./filters.json */ "./src/modules/filter/filters.json", 1);
- // Filter Template
-
-const getFilterElement = _filters_json__WEBPACK_IMPORTED_MODULE_0__["filters"].map(filterElement => {
-  return `
-    <input
-      type="radio"
-      id="filter__${filterElement.filterName.toLowerCase()}"
-      class="filter__input visually-hidden"
-      name="filter"
-      ${filterElement.filterIsChecked ? `checked` : ``}
-	    ${filterElement.filterIsDisabled ? `disabled` : ``}
-    />
-    <label for="filter__${filterElement.filterName.toLowerCase()}" class="filter__label">
-      ${filterElement.filterName} <span class="filter__all-count">${filterElement.filterAmount}</span>
-    </label>
-  `;
-}); // Render Filters
-
-const renderFilter = () => {
-  return document.querySelector(`.main__filter`).insertAdjacentHTML(`beforeend`, getFilterElement.join(``));
-};
-
-/***/ }),
-
-/***/ "./src/modules/filter/filters.json":
-/*!*****************************************!*\
-  !*** ./src/modules/filter/filters.json ***!
-  \*****************************************/
-/*! exports provided: filters, default */
-/***/ (function(module) {
-
-module.exports = {"filters":[{"filterName":"All","filterAmount":15,"filterIsChecked":true},{"filterName":"Overdue","filterAmount":0,"filterIsDisabled":true},{"filterName":"Today","filterAmount":0,"filterIsDisabled":true},{"filterName":"Favorites","filterAmount":7},{"filterName":"Repeating","filterAmount":2},{"filterName":"Tags","filterAmount":6},{"filterName":"Archive","filterAmount":115}]};
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "filter", function() { return filter; });
+const filter = (label, count = 0) => `
+    <input type="radio" id="filter__${label}" class="filter__input visually-hidden" name="filter" ${count === 0 ? `disabled` : ``} ${label === `all` && count !== 0 ? `checked` : ``} />
+    <label for="filter__${label}" class="filter__label">${label} <span class="filter__${label}-count">${count}</span></label>`;
 
 /***/ }),
 
@@ -21076,13 +21102,12 @@ const Color = {
 /*!**********************************!*\
   !*** ./src/modules/task/data.js ***!
   \**********************************/
-/*! exports provided: taskList */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "taskList", function() { return taskList; });
-const taskList = {
+/* harmony default export */ __webpack_exports__["default"] = (() => ({
   title: [`Изучить теорию`, `Сделать домашку`, `Пройти интенсив на соточку`][Math.floor(Math.random() * 3)],
   dueDate: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
   tags: new Set([`homework`, `theory`, `practice`, `intensive`, `keks`]),
@@ -21101,7 +21126,7 @@ const taskList = {
     'su': false
   },
   color: [`black`, `yellow`, `blue`, `pink`, `green`][Math.floor(Math.random() * 3)]
-};
+}));
 
 /***/ }),
 

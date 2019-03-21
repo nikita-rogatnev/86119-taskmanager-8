@@ -1,4 +1,4 @@
-export const taskList = {
+export default () => ({
   title: [
     `Изучить теорию`,
     `Сделать домашку`,
@@ -31,4 +31,4 @@ export const taskList = {
     `pink`,
     `green`
   ][Math.floor(Math.random() * 3)],
-};
+});

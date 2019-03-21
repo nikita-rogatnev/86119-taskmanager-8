@@ -1,20 +1,10 @@
-import {getRandomNumber} from '../filter/data';
-
 export const taskList = {
   title: [
     `Изучить теорию`,
     `Сделать домашку`,
     `Пройти интенсив на соточку`,
   ][Math.floor(Math.random() * 3)],
-  get dueDate() {
-    const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + getRandomNumber(-7, 7));
-
-    return dueDate.toLocaleDateString(`en-GB`, {
-      day: `numeric`,
-      month: `long`
-    });
-  },
+  dueDate: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
   tags: new Set([
     `homework`,
     `theory`,
@@ -25,13 +15,6 @@ export const taskList = {
   get picture() {
     return `//picsum.photos/100/100?r=${Math.random()}`;
   },
-  color: [
-    `black`,
-    `yellow`,
-    `blue`,
-    `green`,
-    `pink`,
-  ],
   repeatingDays: {
     'mo': true,
     'tu': false,
@@ -41,6 +24,11 @@ export const taskList = {
     'sa': true,
     'su': false,
   },
-  isFavorite: true,
-  isDone: false
+  color: [
+    `black`,
+    `yellow`,
+    `blue`,
+    `pink`,
+    `green`
+  ][Math.floor(Math.random() * 3)],
 };

@@ -76,7 +76,6 @@ const renderTasks = (tasks) => {
       task.repeatingDays = newObject.repeatingDays;
       task.color = newObject.color;
       task.isFavorite = newObject.isFavorite;
-      task.isDone = newObject.isDone;
 
       editTaskComponent.blockOnSave();
 

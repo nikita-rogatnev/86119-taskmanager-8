@@ -296,9 +296,7 @@ export default class TaskEdit extends Component {
     this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
     this._color = data.color;
-
     this._isFavorite = data.isFavorite;
-    this._isDone = data.isDone;
   }
 
   static createMapper(target) {

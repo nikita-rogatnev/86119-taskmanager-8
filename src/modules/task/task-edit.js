@@ -17,6 +17,9 @@ export class TaskEdit extends Component {
     this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
     this._onSubmit = null;
 
+    this._isDone = false;
+    this._isFavorite = false;
+
     this._state.isDate = false;
     this._state.isRepeated = false;
 
@@ -243,7 +246,8 @@ export class TaskEdit extends Component {
     this._repeatingDays = data.repeatingDays;
     this._dueDate = data.dueDate;
 
-    console.log(data);
+    this._isDone = data.isDone;
+    this._isFavorite = data.isFavorite;
   }
 
   static createMapper(target) {

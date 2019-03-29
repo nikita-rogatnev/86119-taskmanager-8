@@ -12,6 +12,9 @@ export class Task extends Component {
     this._repeatingDays = data.repeatingDays;
     this._onEdit = null;
 
+    this._isDone = false;
+    this._isFavorite = false;
+
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
   }
 
@@ -85,5 +88,7 @@ export class Task extends Component {
     this._tags = data.tags;
     this._color = data.color;
     this._repeatingDays = data.repeatingDays;
+    this._isDone = data.isDone;
+    this._isFavorite = data.isFavorite;
   }
 }

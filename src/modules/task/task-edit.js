@@ -1,30 +1,34 @@
-import {Component} from '../../component';
-import {Color} from './color';
+import Component from '../../component';
+import Color from './color';
+
 import moment from 'moment';
 import flatpickr from 'flatpickr';
+
 import "../../../node_modules/flatpickr/dist/flatpickr.css";
 import "../../../node_modules/flatpickr/dist/themes/dark.css";
 
-export class TaskEdit extends Component {
+export default class TaskEdit extends Component {
   constructor(data) {
     super();
+    this._id = data.id;
     this._title = data.title;
+    this._dueDate = data.dueDate;
     this._tags = data.tags;
+    this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
     this._color = data.color;
-    this._dueDate = data.dueDate;
 
-    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
-    this._onSubmit = null;
-
-    this._isDone = false;
-    this._isFavorite = false;
+    this._isFavorite = data.isFavorite;
+    this._isDone = data.isDone;
 
     this._state.isDate = false;
     this._state.isRepeated = false;
 
-    this._onChangeDate = this._onChangeDate.bind(this);
-    this._onChangeRepeated = this._onChangeRepeated.bind(this);
+    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onSubmit = null;
+
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
+    this._onDelete = null;
   }
 
   _processForm(formData) {
@@ -85,6 +89,16 @@ export class TaskEdit extends Component {
 
   _partialUpdate() {
     this._element.innerHTML = this.template;
+  }
+
+  setOnDelete(fn) {
+    this._onDelete = fn;
+  }
+
+  _onDeleteButtonClick() {
+    if (typeof this._onDelete === `function`) {
+      this._onDelete({id: this._id});
+    }
   }
 
   set onSubmit(fn) {
@@ -203,6 +217,39 @@ export class TaskEdit extends Component {
     </article>`.trim();
   }
 
+  blockOnSave() {
+    this._element.querySelector(`.card__save`).disabled = true;
+    this._element.querySelector(`.card__save`).innerHTML = `Saving...`;
+    this._element.querySelector(`.card__text`).disabled = true;
+  }
+
+  unblockOnSave() {
+    this._element.querySelector(`.card__save`).disabled = false;
+    this._element.querySelector(`.card__save`).innerHTML = `Save`;
+    this._element.querySelector(`.card__text`).disabled = false;
+  }
+
+  blockOnDelete() {
+    this._element.querySelector(`.card__delete`).disabled = true;
+    this._element.querySelector(`.card__delete`).innerHTML = `Deleting...`;
+    this._element.querySelector(`.card__text`).disabled = true;
+  }
+
+  unblockOnDelete() {
+    this._element.querySelector(`.card__delete`).disabled = false;
+    this._element.querySelector(`.card__delete`).innerHTML = `Delete`;
+    this._element.querySelector(`.card__text`).disabled = false;
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
   bind() {
     this._element.querySelector(`.card__form`)
       .addEventListener(`submit`, this._onSubmitButtonClick);
@@ -210,6 +257,9 @@ export class TaskEdit extends Component {
       .addEventListener(`click`, this._onChangeDate);
     this._element.querySelector(`.card__repeat-toggle`)
       .addEventListener(`click`, this._onChangeRepeated);
+
+    this._element.querySelector(`.card__delete`)
+      .addEventListener(`click`, () => this._onDeleteButtonClick());
 
     if (this._state.isDate) {
       const cardDate = this._element.querySelector(`.card__date`);
@@ -241,13 +291,14 @@ export class TaskEdit extends Component {
 
   update(data) {
     this._title = data.title;
-    this._tags = data.tags;
-    this._color = data.color;
-    this._repeatingDays = data.repeatingDays;
     this._dueDate = data.dueDate;
+    this._tags = data.tags;
+    this._picture = data.picture;
+    this._repeatingDays = data.repeatingDays;
+    this._color = data.color;
 
-    this._isDone = data.isDone;
     this._isFavorite = data.isFavorite;
+    this._isDone = data.isDone;
   }
 
   static createMapper(target) {

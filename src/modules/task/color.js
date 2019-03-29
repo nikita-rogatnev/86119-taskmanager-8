@@ -1,4 +1,4 @@
-export const Color = {
+export default {
   blue: `card--blue`,
   black: `card--black`,
   yellow: `card--yellow`,

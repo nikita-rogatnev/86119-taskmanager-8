@@ -1,21 +1,24 @@
-import {Component} from '../../component';
-import {Color} from './color';
+import Component from '../../component';
+import Color from './color';
+
 import moment from 'moment';
 
-export class Task extends Component {
+export default class Task extends Component {
   constructor(data) {
     super();
+    this._id = data.id;
     this._title = data.title;
     this._dueDate = data.dueDate;
     this._tags = data.tags;
     this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
-    this._onEdit = null;
+    this._color = data.color;
 
-    this._isDone = false;
     this._isFavorite = false;
+    this._isDone = false;
 
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
+    this._onEdit = null;
   }
 
   _isRepeated() {
@@ -86,9 +89,11 @@ export class Task extends Component {
     this._title = data.title;
     this._dueDate = data.dueDate;
     this._tags = data.tags;
-    this._color = data.color;
+    this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
-    this._isDone = data.isDone;
+    this._color = data.color;
+
     this._isFavorite = data.isFavorite;
+    this._isDone = data.isDone;
   }
 }

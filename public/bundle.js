@@ -20886,16 +20886,119 @@ module.exports = function (module) {
 
 /***/ }),
 
-/***/ "./src/component.js":
-/*!**************************!*\
-  !*** ./src/component.js ***!
-  \**************************/
-/*! exports provided: Component */
+/***/ "./src/api.js":
+/*!********************!*\
+  !*** ./src/api.js ***!
+  \********************/
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Component", function() { return Component; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return API; });
+/* harmony import */ var _modules_task_model_task__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./modules/task/model-task */ "./src/modules/task/model-task.js");
+
+const Method = {
+  GET: `GET`,
+  POST: `POST`,
+  PUT: `PUT`,
+  DELETE: `DELETE`
+};
+
+const checkStatus = response => {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  } else {
+    throw new Error(`${response.status}: ${response.statusText}`);
+  }
+};
+
+const toJSON = response => {
+  return response.json();
+};
+
+class API {
+  constructor({
+    endPoint,
+    authorization
+  }) {
+    this._endPoint = endPoint;
+    this._authorization = authorization;
+  }
+
+  getTasks() {
+    return this._load({
+      url: `tasks`
+    }).then(toJSON).then(_modules_task_model_task__WEBPACK_IMPORTED_MODULE_0__["default"].parseTasks);
+  }
+
+  createTask({
+    task
+  }) {
+    return this._load({
+      url: `tasks`,
+      method: Method.POST,
+      body: JSON.stringify(task),
+      headers: new Headers({
+        'Content-Type': `application/json`
+      })
+    }).then(toJSON).then(_modules_task_model_task__WEBPACK_IMPORTED_MODULE_0__["default"].parseTask);
+  }
+
+  updateTask({
+    id,
+    data
+  }) {
+    return this._load({
+      url: `tasks/${id}`,
+      method: Method.PUT,
+      body: JSON.stringify(data),
+      headers: new Headers({
+        'Content-Type': `application/json`
+      })
+    }).then(toJSON).then(_modules_task_model_task__WEBPACK_IMPORTED_MODULE_0__["default"].parseTask);
+  }
+
+  deleteTask({
+    id
+  }) {
+    return this._load({
+      url: `tasks/${id}`,
+      method: Method.DELETE
+    });
+  }
+
+  _load({
+    url,
+    method = Method.GET,
+    body = null,
+    headers = new Headers()
+  }) {
+    headers.append(`Authorization`, this._authorization);
+    return fetch(`${this._endPoint}/${url}`, {
+      method,
+      body,
+      headers
+    }).then(checkStatus).catch(err => {
+      console.error(`fetch error: ${err}`);
+      throw err;
+    });
+  }
+
+}
+
+/***/ }),
+
+/***/ "./src/component.js":
+/*!**************************!*\
+  !*** ./src/component.js ***!
+  \**************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Component; });
 /* harmony import */ var _helpers_create_element__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./helpers/create-element */ "./src/helpers/create-element.js");
 
 class Component {
@@ -20959,21 +21062,6 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
-/***/ "./src/helpers/get-random-number.js":
-/*!******************************************!*\
-  !*** ./src/helpers/get-random-number.js ***!
-  \******************************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = ((min, max) => {
-  return Math.floor(Math.random() * (max + 1 - min) + min);
-});
-
-/***/ }),
-
 /***/ "./src/main.js":
 /*!*********************!*\
   !*** ./src/main.js ***!
@@ -20983,131 +21071,214 @@ __webpack_require__.r(__webpack_exports__);
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
-/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _modules_filter_filter__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/filter/filter */ "./src/modules/filter/filter.js");
-/* harmony import */ var _modules_task_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/task/data */ "./src/modules/task/data.js");
+/* harmony import */ var _api__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./api */ "./src/api.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
+/* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(moment__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _modules_filter_filter__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/filter/filter */ "./src/modules/filter/filter.js");
 /* harmony import */ var _modules_task_task__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./modules/task/task */ "./src/modules/task/task.js");
 /* harmony import */ var _modules_task_task_edit__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./modules/task/task-edit */ "./src/modules/task/task-edit.js");
 
+ // import taskList from './modules/task/data';
 
 
 
- // Navigation
+ // Variables
 
+const containerFilters = document.querySelector(`.main__filter`);
+const containerBoard = document.querySelector(`.board`);
+const containerTasks = document.querySelector(`.board__tasks`);
+const containerNoTasks = document.querySelector(`.board__no-tasks`);
+const containerStatistics = document.querySelector(`.statistic`);
 const tabTasks = document.querySelector(`label[for="control__task"]`);
 const tabStatistics = document.querySelector(`label[for="control__statistic"]`);
-const containerTasks = document.querySelector(`.board`);
-const containerStatistics = document.querySelector(`.statistic`);
-const containerFilters = document.querySelector(`.main__filter`);
+let filters = []; // API
+
+const AUTHORIZATION = `Basic dXNckBwYXNzd29yZAo=${Math.random()}`;
+const END_POINT = `https://es8-demo-srv.appspot.com/task-manager`;
+const api = new _api__WEBPACK_IMPORTED_MODULE_0__["default"]({
+  endPoint: END_POINT,
+  authorization: AUTHORIZATION
+}); // Render Filtered Tasks
+
+const filteredTasks = (filterName, tasks) => {
+  switch (filterName) {
+    case `All`:
+      return tasks;
+
+    case `Overdue`:
+      return tasks.filter(it => it.dueDate < Date.now());
+
+    case `Today`:
+      return tasks.filter(it => it.dueDate < Date.now());
+
+    case `Repeating`:
+      return tasks.filter(it => [...Object.entries(it.repeatingDays)].some(rec => rec[1]));
+  }
+
+  return tasks;
+};
+
+const updateFilterLabels = tasks => {
+  filters.forEach(filter => {
+    const newCount = filteredTasks(filter._name, tasks).length;
+
+    if (filter._count !== newCount) {
+      filter.updateCount(newCount);
+    }
+  });
+}; // Tasks
+
+
+const renderTasks = tasks => {
+  containerTasks.innerHTML = ``;
+
+  for (const task of tasks) {
+    const taskComponent = new _modules_task_task__WEBPACK_IMPORTED_MODULE_3__["default"](task);
+    const editTaskComponent = new _modules_task_task_edit__WEBPACK_IMPORTED_MODULE_4__["default"](task);
+    containerTasks.appendChild(taskComponent.render());
+
+    taskComponent.onEdit = () => {
+      editTaskComponent.render();
+      containerTasks.replaceChild(editTaskComponent.element, taskComponent.element);
+      taskComponent.unrender();
+    };
+
+    editTaskComponent.onSubmit = newObject => {
+      task.title = newObject.title;
+      task.dueDate = newObject.dueDate;
+      task.tags = newObject.tags;
+      task.picture = newObject.picture;
+      task.repeatingDays = newObject.repeatingDays;
+      task.color = newObject.color;
+      task.isFavorite = newObject.isFavorite;
+      task.isDone = newObject.isDone;
+      editTaskComponent.blockOnSave();
+      api.updateTask({
+        id: task.id,
+        data: task.toRAW()
+      }).then(response => {
+        if (response) {
+          editTaskComponent.unblockOnSave();
+          taskComponent.update(response);
+          taskComponent.render();
+          containerTasks.replaceChild(taskComponent.element, editTaskComponent.element);
+          editTaskComponent.unrender();
+          updateFilterLabels(tasks);
+        }
+      }).catch(() => editTaskComponent.shake()).then(() => editTaskComponent.unblockOnSave());
+    };
+
+    editTaskComponent.onDelete = ({
+      id
+    }) => {
+      editTaskComponent.blockOnDelete();
+      api.deleteTask({
+        id
+      }).then(() => api.getTasks()).then(tasksNew => {
+        renderFilters(filterList, tasksNew);
+      }).catch(() => {
+        editTaskComponent.shake();
+        editTaskComponent.unblockOnDelete();
+      });
+    };
+  }
+}; // Filters
+
+
+const filterList = [{
+  id: 1,
+  name: `All`,
+  count: 5,
+  checked: true
+}, {
+  id: 2,
+  name: `Overdue`,
+  count: 2,
+  checked: false
+}, {
+  id: 3,
+  name: `Today`,
+  count: 3,
+  checked: false
+}, {
+  id: 4,
+  name: `Favorites`,
+  count: 1,
+  checked: false
+}, {
+  id: 5,
+  name: `Repeating`,
+  count: 5,
+  checked: false
+}, {
+  id: 6,
+  name: `Tags`,
+  count: 1,
+  checked: false
+}, {
+  id: 7,
+  name: `Archive`,
+  count: 3,
+  checked: false
+}];
+
+const renderFilters = (data, tasks) => {
+  filters = [];
+  containerFilters.innerHTML = ``;
+  data.forEach(filter => {
+    const tasksFilter = filteredTasks(filter.name, tasks);
+    filter.count = tasksFilter.length;
+    const filterComponent = new _modules_filter_filter__WEBPACK_IMPORTED_MODULE_2__["default"](filter);
+    filters.push(filterComponent);
+    containerFilters.appendChild(filterComponent.render());
+
+    filterComponent.onFilter = () => {
+      containerStatistics.classList.add(`visually-hidden`);
+      containerTasks.classList.remove(`visually-hidden`);
+      updateFilterLabels(tasks);
+      renderTasks(filteredTasks(filter.name, tasks));
+    };
+
+    if (filterComponent._checked) {
+      filterComponent._onFilter();
+    }
+  });
+};
+
+const startLoad = () => {
+  containerTasks.classList.add(`visually-hidden`);
+  containerNoTasks.classList.remove(`visually-hidden`);
+  containerNoTasks.innerHTML = `Loading tasks...`;
+};
+
+const errorLoad = () => {
+  containerNoTasks.innerHTML = `Something went wrong while loading your tasks. Check your connection or try again later`;
+};
+
+const stopLoad = () => {
+  containerTasks.classList.remove(`visually-hidden`);
+  containerNoTasks.classList.add(`visually-hidden`);
+};
+
+startLoad();
+api.getTasks().then(tasks => {
+  renderFilters(filterList, tasks);
+}).then(stopLoad).catch(errorLoad); // Navigation
 
 const onClickTabTasks = () => {
-  containerTasks.classList.remove(`visually-hidden`);
+  containerBoard.classList.remove(`visually-hidden`);
   containerFilters.classList.remove(`visually-hidden`);
   containerStatistics.classList.add(`visually-hidden`);
 };
 
 const onClickTabStatistics = () => {
-  containerTasks.classList.add(`visually-hidden`);
+  containerBoard.classList.add(`visually-hidden`);
   containerFilters.classList.add(`visually-hidden`);
-  containerStatistics.classList.remove(`visually-hidden`); // renderStatistic();
+  containerStatistics.classList.remove(`visually-hidden`); // renderStatistics();
 };
 
 tabTasks.addEventListener(`click`, onClickTabTasks);
-tabStatistics.addEventListener(`click`, onClickTabStatistics); // Tasks
-
-const TASKS_COUNT = 12;
-const tasksContainer = document.querySelector(`.board__tasks`);
-const taskItems = new Array(TASKS_COUNT).fill(``).map(() => Object(_modules_task_data__WEBPACK_IMPORTED_MODULE_2__["default"])());
-
-const updateTask = (tasks, i, newTask) => {
-  tasks[i] = Object.assign({}, tasks[i], newTask);
-  return tasks[i];
-};
-
-const deleteTask = (tasks, i) => {
-  tasks.splice(i, 1);
-  return tasks;
-};
-
-const renderTasks = tasks => {
-  tasksContainer.innerHTML = ``;
-
-  for (let i = 0; i < tasks.length; i++) {
-    const task = tasks[i];
-    const taskComponent = new _modules_task_task__WEBPACK_IMPORTED_MODULE_3__["Task"](task);
-    const editTaskComponent = new _modules_task_task_edit__WEBPACK_IMPORTED_MODULE_4__["TaskEdit"](task);
-
-    taskComponent.onEdit = () => {
-      editTaskComponent.render();
-      tasksContainer.replaceChild(editTaskComponent.element, taskComponent.element);
-      taskComponent.unrender();
-    };
-
-    editTaskComponent.onSubmit = newObject => {
-      const updatedTask = updateTask(tasks, i, newObject);
-      taskComponent.update(updatedTask);
-      taskComponent.render();
-      tasksContainer.replaceChild(taskComponent.element, editTaskComponent.element);
-      editTaskComponent.unrender();
-    };
-
-    editTaskComponent.onDelete = () => {
-      deleteTask(tasks, i);
-      editTaskComponent.unrender();
-    };
-
-    tasksContainer.appendChild(taskComponent.render());
-  }
-};
-
-renderTasks(taskItems); // Filters
-
-const filtersContainer = document.querySelector(`.filter`);
-const filterList = [`all`, `overdue`, `today`, `favorites`, `repeating`, `tags`, `archive`];
-
-const renderFilters = filters => {
-  filtersContainer.innerHTML = ``;
-  filters.forEach(filterItem => {
-    const filterComponent = new _modules_filter_filter__WEBPACK_IMPORTED_MODULE_1__["Filter"](filterItem);
-    filtersContainer.appendChild(filterComponent.render());
-  });
-};
-
-renderFilters(filterList, filtersContainer);
-
-const filterTasks = (tasks, filterName) => {
-  console.log(filterName);
-
-  switch (filterName) {
-    case `filter__overdue`:
-      return tasks.filter(it => moment__WEBPACK_IMPORTED_MODULE_0___default()(it.dueDate) < moment__WEBPACK_IMPORTED_MODULE_0___default()());
-
-    case `filter__today`:
-      return tasks.filter(it => moment__WEBPACK_IMPORTED_MODULE_0___default()(it.dueDate).format(`D MMMM`) === moment__WEBPACK_IMPORTED_MODULE_0___default()().format(`D MMMM`));
-
-    case `filter__favorites`:
-      return tasks.filter(it => it.isFavorite === true);
-
-    case `filter__repeating`:
-      return tasks.filter(it => [...Object.entries(it.repeatingDays)].some(rec => rec[1]));
-
-    case `filter__tags`:
-      return tasks.filter(it => [...it.tags].some(rec => rec[1]));
-
-    case `filter__archive`:
-      return tasks.filter(it => it.isDone === true);
-
-    default:
-      return tasks;
-  }
-};
-
-filtersContainer.onchange = evt => {
-  const filterName = evt.target.id;
-  const filteredTasks = filterTasks(_modules_task_data__WEBPACK_IMPORTED_MODULE_2__["default"], filterName);
-  renderTasks(filteredTasks);
-};
+tabStatistics.addEventListener(`click`, onClickTabStatistics);
 
 /***/ }),
 
@@ -21115,39 +21286,70 @@ filtersContainer.onchange = evt => {
 /*!**************************************!*\
   !*** ./src/modules/filter/filter.js ***!
   \**************************************/
-/*! exports provided: Filter */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Filter", function() { return Filter; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Filter; });
 /* harmony import */ var _component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../component */ "./src/component.js");
-/* harmony import */ var _helpers_get_random_number__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../helpers/get-random-number */ "./src/helpers/get-random-number.js");
+/* harmony import */ var _helpers_create_element__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../helpers/create-element */ "./src/helpers/create-element.js");
 
 
-class Filter extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+class Filter extends _component__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(data) {
     super();
-    this._name = data;
-    this._state = {
-      _isDisabled: false,
-      _isChecked: false
-    };
+    this._name = data.name;
+    this._id = data.id;
+    this._count = data.count;
+    this._checked = data.checked;
+    this._onFilter = this._onFilter.bind(this);
   }
 
   set onFilter(fn) {
     this._onFilter = fn;
   }
 
+  _onFilter(evt) {
+    evt.preventDefault();
+
+    if (typeof this._onFilter === `function`) {
+      this._onFilter();
+    }
+  }
+
   get template() {
     return `
-    <div>
-      <input type="radio" id="filter__${this._name.toLowerCase()}" class="filter__input visually-hidden" name="filter"}>
-      <label for="filter__${this._name.toLowerCase()}" class="filter__label">
-        ${this._name}
-        <span class="filter__${this._name.toLowerCase()}-count">${Object(_helpers_get_random_number__WEBPACK_IMPORTED_MODULE_1__["default"])(1, 100)}</span>
-      </label>
-    </div>`.trim();
+      <div>
+        <input
+          type="radio"
+          id="filter__${this._id}"
+          class="filter__input visually-hidden"
+          name="filter"
+          ${this._checked ? `checked` : ``}/>
+        <label for="filter__${this.title}" class="filter__label">
+          ${this._name}
+          <span class="filter__${this._id}-count">{this._count}</span>
+        </label>
+      </div>`;
+  }
+
+  updateCount(newCount) {
+    this._element.querySelector(`.filter__${this._id}-count`).innerHTML = newCount;
+  }
+
+  render() {
+    this._element = Object(_helpers_create_element__WEBPACK_IMPORTED_MODULE_1__["default"])(this.template);
+    this.bind();
+    return this._element;
+  }
+
+  bind() {// this._element.querySelector(`.filter__input`)
+    //   .addEventListener(`change`, this._onFilter);
+  }
+
+  unbind() {
+    this._element.querySelector(`.filter__input`).removeEventListener(`change`, this._onFilter);
   }
 
 }
@@ -21158,51 +21360,67 @@ class Filter extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 /*!***********************************!*\
   !*** ./src/modules/task/color.js ***!
   \***********************************/
-/*! exports provided: Color */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Color", function() { return Color; });
-const Color = {
-  blue: `card--blue`,
-  black: `card--black`,
-  yellow: `card--yellow`,
-  green: `card--green`,
-  pink: `card--pink`
-};
-
-/***/ }),
-
-/***/ "./src/modules/task/data.js":
-/*!**********************************!*\
-  !*** ./src/modules/task/data.js ***!
-  \**********************************/
 /*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony default export */ __webpack_exports__["default"] = (() => ({
-  title: [`Изучить теорию`, `Сделать домашку`, `Пройти интенсив на соточку`][Math.floor(Math.random() * 3)],
-  dueDate: Date.now() + 1 + Math.floor(Math.random() * 7) * 24 * 60 * 60 * 1000,
-  tags: new Set([`homework`, `theory`, `practice`, `intensive`, `keks`]),
+/* harmony default export */ __webpack_exports__["default"] = ({
+  blue: `card--blue`,
+  black: `card--black`,
+  yellow: `card--yellow`,
+  green: `card--green`,
+  pink: `card--pink`
+});
 
-  get picture() {
-    return `//picsum.photos/100/100?r=${Math.random()}`;
-  },
+/***/ }),
 
-  repeatingDays: {
-    'mo': true,
-    'tu': false,
-    'we': true,
-    'th': false,
-    'fr': false,
-    'sa': true,
-    'su': false
-  },
-  color: [`black`, `yellow`, `blue`, `pink`, `green`][Math.floor(Math.random() * 3)]
-}));
+/***/ "./src/modules/task/model-task.js":
+/*!****************************************!*\
+  !*** ./src/modules/task/model-task.js ***!
+  \****************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return ModelTask; });
+class ModelTask {
+  constructor(data) {
+    this.id = data[`id`];
+    this.title = data[`title`] || ``;
+    this.dueDate = new Date(data[`due_date`]);
+    this.tags = new Set(data[`tags`] || []);
+    this.picture = data[`picture`] || ``;
+    this.repeatingDays = data[`repeating_days`];
+    this.color = data[`color`];
+    this.isFavorite = Boolean(data[`is_favorite`]);
+    this.isDone = Boolean(data[`is_done`]);
+  }
+
+  toRAW() {
+    return {
+      'id': this.id,
+      'title': this.title,
+      'due_date': this.dueDate,
+      'tags': [...this.tags.values()],
+      'picture': this.picture,
+      'repeating_days': this.repeatingDays,
+      'color': this.color,
+      'is_favorite': this.isFavorite,
+      'is_done': this.isDone
+    };
+  }
+
+  static parseTask(data) {
+    return new ModelTask(data);
+  }
+
+  static parseTasks(data) {
+    return data.map(ModelTask.parseTask);
+  }
+
+}
 
 /***/ }),
 
@@ -21210,12 +21428,12 @@ __webpack_require__.r(__webpack_exports__);
 /*!***************************************!*\
   !*** ./src/modules/task/task-edit.js ***!
   \***************************************/
-/*! exports provided: TaskEdit */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "TaskEdit", function() { return TaskEdit; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return TaskEdit; });
 /* harmony import */ var _component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../component */ "./src/component.js");
 /* harmony import */ var _color__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./color */ "./src/modules/task/color.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
@@ -21232,22 +21450,24 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class TaskEdit extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+class TaskEdit extends _component__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(data) {
     super();
+    this._id = data.id;
     this._title = data.title;
+    this._dueDate = data.dueDate;
     this._tags = data.tags;
+    this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
     this._color = data.color;
-    this._dueDate = data.dueDate;
-    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
-    this._onSubmit = null;
-    this._isDone = false;
-    this._isFavorite = false;
+    this._isFavorite = data.isFavorite;
+    this._isDone = data.isDone;
     this._state.isDate = false;
     this._state.isRepeated = false;
-    this._onChangeDate = this._onChangeDate.bind(this);
-    this._onChangeRepeated = this._onChangeRepeated.bind(this);
+    this._onSubmitButtonClick = this._onSubmitButtonClick.bind(this);
+    this._onSubmit = null;
+    this._onDeleteButtonClick = this._onDeleteButtonClick.bind(this);
+    this._onDelete = null;
   }
 
   _processForm(formData) {
@@ -21312,13 +21532,25 @@ class TaskEdit extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     this._element.innerHTML = this.template;
   }
 
+  setOnDelete(fn) {
+    this._onDelete = fn;
+  }
+
+  _onDeleteButtonClick() {
+    if (typeof this._onDelete === `function`) {
+      this._onDelete({
+        id: this._id
+      });
+    }
+  }
+
   set onSubmit(fn) {
     this._onSubmit = fn;
   }
 
   get template() {
     return `
-    <article class="card card--edit ${_color__WEBPACK_IMPORTED_MODULE_1__["Color"][this._color]}  ${this._isRepeated() ? `card--repeat` : ``}">
+    <article class="card card--edit ${_color__WEBPACK_IMPORTED_MODULE_1__["default"][this._color]}  ${this._isRepeated() ? `card--repeat` : ``}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -21428,12 +21660,46 @@ class TaskEdit extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     </article>`.trim();
   }
 
+  blockOnSave() {
+    this._element.querySelector(`.card__save`).disabled = true;
+    this._element.querySelector(`.card__save`).innerHTML = `Saving...`;
+    this._element.querySelector(`.card__text`).disabled = true;
+  }
+
+  unblockOnSave() {
+    this._element.querySelector(`.card__save`).disabled = false;
+    this._element.querySelector(`.card__save`).innerHTML = `Save`;
+    this._element.querySelector(`.card__text`).disabled = false;
+  }
+
+  blockOnDelete() {
+    this._element.querySelector(`.card__delete`).disabled = true;
+    this._element.querySelector(`.card__delete`).innerHTML = `Deleting...`;
+    this._element.querySelector(`.card__text`).disabled = true;
+  }
+
+  unblockOnDelete() {
+    this._element.querySelector(`.card__delete`).disabled = false;
+    this._element.querySelector(`.card__delete`).innerHTML = `Delete`;
+    this._element.querySelector(`.card__text`).disabled = false;
+  }
+
+  shake() {
+    const ANIMATION_TIMEOUT = 600;
+    this._element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this._element.style.animation = ``;
+    }, ANIMATION_TIMEOUT);
+  }
+
   bind() {
     this._element.querySelector(`.card__form`).addEventListener(`submit`, this._onSubmitButtonClick);
 
     this._element.querySelector(`.card__date-deadline-toggle`).addEventListener(`click`, this._onChangeDate);
 
     this._element.querySelector(`.card__repeat-toggle`).addEventListener(`click`, this._onChangeRepeated);
+
+    this._element.querySelector(`.card__delete`).addEventListener(`click`, () => this._onDeleteButtonClick());
 
     if (this._state.isDate) {
       const cardDate = this._element.querySelector(`.card__date`);
@@ -21465,12 +21731,13 @@ class TaskEdit extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
   update(data) {
     this._title = data.title;
-    this._tags = data.tags;
-    this._color = data.color;
-    this._repeatingDays = data.repeatingDays;
     this._dueDate = data.dueDate;
-    this._isDone = data.isDone;
+    this._tags = data.tags;
+    this._picture = data.picture;
+    this._repeatingDays = data.repeatingDays;
+    this._color = data.color;
     this._isFavorite = data.isFavorite;
+    this._isDone = data.isDone;
   }
 
   static createMapper(target) {
@@ -21516,12 +21783,12 @@ class TaskEdit extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 /*!**********************************!*\
   !*** ./src/modules/task/task.js ***!
   \**********************************/
-/*! exports provided: Task */
+/*! exports provided: default */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "Task", function() { return Task; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "default", function() { return Task; });
 /* harmony import */ var _component__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../component */ "./src/component.js");
 /* harmony import */ var _color__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./color */ "./src/modules/task/color.js");
 /* harmony import */ var moment__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! moment */ "./node_modules/moment/moment.js");
@@ -21529,18 +21796,20 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-class Task extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
+class Task extends _component__WEBPACK_IMPORTED_MODULE_0__["default"] {
   constructor(data) {
     super();
+    this._id = data.id;
     this._title = data.title;
     this._dueDate = data.dueDate;
     this._tags = data.tags;
     this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
-    this._onEdit = null;
-    this._isDone = false;
+    this._color = data.color;
     this._isFavorite = false;
+    this._isDone = false;
     this._onEditButtonClick = this._onEditButtonClick.bind(this);
+    this._onEdit = null;
   }
 
   _isRepeated() {
@@ -21557,7 +21826,7 @@ class Task extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
 
   get template() {
     return `
-    <article class="card ${_color__WEBPACK_IMPORTED_MODULE_1__["Color"][this._color]} ${this._isRepeated() ? `card--repeat` : ``}">
+    <article class="card ${_color__WEBPACK_IMPORTED_MODULE_1__["default"][this._color]} ${this._isRepeated() ? `card--repeat` : ``}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__control">
@@ -21609,10 +21878,11 @@ class Task extends _component__WEBPACK_IMPORTED_MODULE_0__["Component"] {
     this._title = data.title;
     this._dueDate = data.dueDate;
     this._tags = data.tags;
-    this._color = data.color;
+    this._picture = data.picture;
     this._repeatingDays = data.repeatingDays;
-    this._isDone = data.isDone;
+    this._color = data.color;
     this._isFavorite = data.isFavorite;
+    this._isDone = data.isDone;
   }
 
 }
